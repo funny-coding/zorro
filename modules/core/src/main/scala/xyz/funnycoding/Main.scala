@@ -3,28 +3,36 @@ package xyz.funnycoding
 import cats.effect.IOApp
 import cats.effect.{ ExitCode, IO }
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-import io.chrisdavenport.log4cats.Logger
-import xyz.funnycoding.modules.HttpApi
-import org.http4s.server.blaze.BlazeServerBuilder
+import xyz.funnycoding.file._
+import xyz.funnycoding.programs.AdventProgram._
+import cats.effect._
+import cats.implicits._
 
 object Main extends IOApp {
 
   implicit val logger = Slf4jLogger.getLogger[IO]
-
+  implicit val reader = new LiveReader[IO]
   override def run(args: List[String]): IO[ExitCode] =
     for {
-      _ <- IO(println("IO here"))
-      _ <- Logger[IO].warn("this is a warning")
-      api <- HttpApi.make[IO]
-      _ <- BlazeServerBuilder[IO]
-            .bindHttp(
-              8080,
-              "0.0.0.0"
-            )
-            .withHttpApp(api.httpApp)
-            .serve
-            .compile
-            .drain
+      a <- IO(args)
+      _ <- if (a.isEmpty) {
+            val x = programLookup.toList
+              .traverse {
+                case (key, value) => solve[IO](key, value).flatMap(putStrLn)
+              }
+
+            putStrLn("empty shit, gonna run all") *> x
+          } else {
+            val path = fileName(args.head)
+            programLookup.get(path) match {
+              case None => putStrLn("unexisting day")
+              case Some(f) => {
+                solve[IO](path, f).flatMap(putStrLn)
+              }
+            }
+          }
     } yield ExitCode.Success
+
+  def putStrLn(str: String): IO[Unit] = IO { println(str) }
 
 }
