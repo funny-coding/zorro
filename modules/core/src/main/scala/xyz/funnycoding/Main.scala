@@ -14,7 +14,7 @@ object Main extends IOApp {
   implicit val reader = new LiveReader[IO]
   override def run(args: List[String]): IO[ExitCode] =
     for {
-      a <- IO(args)
+      a <- args.pure[IO]
       _ <- if (a.isEmpty) {
             val x = programLookup.toList
               .traverse {
@@ -25,7 +25,7 @@ object Main extends IOApp {
           } else {
             val path = fileName(args.head)
             programLookup.get(path) match {
-              case None => putStrLn("unexisting day")
+              case None => putStrLn("unexisting puzzle")
               case Some(f) => {
                 solve[IO](path, f).flatMap(putStrLn)
               }
