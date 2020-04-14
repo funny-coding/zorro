@@ -78,7 +78,7 @@ object Day6 {
   }
 
   def mkLazySol: List[String] => LazySolution = list => {
-    val parsed = Eval.later(parse(list))
+    val parsed = Eval.later(parse(list)).memoize
     val first  = parsed.map(compute)
     val second = parsed.map(p => indirectLink("YOU", "SAN", p))
     LazySolution(first.map(_.toString()), second.map(_.toString()))

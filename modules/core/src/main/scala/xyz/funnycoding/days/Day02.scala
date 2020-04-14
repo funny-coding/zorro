@@ -13,7 +13,7 @@ object Day02 {
   def mkLazySol: List[String] => LazySolution = list => {
     val machine = Eval.later {
       Parser.parse(list.mkString).updated(2, 2).updated(1, 12)
-    }
+    }.memoize
     val first  = machine.map(m => Runner.evaluate(m).toString())
     val second = machine.map(m => Runner.nounAndVerb(m).toString())
     LazySolution(first, second)

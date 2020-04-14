@@ -1,8 +1,7 @@
 package xyz.funnycoding
 
-import cats.effect.IOApp
-import cats.effect.{ ExitCode, IO }
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import cats.effect._
+import io.chrisdavenport.log4cats.slf4j._
 import xyz.funnycoding.file._
 import xyz.funnycoding.programs.AdventProgram._
 import cats.effect._

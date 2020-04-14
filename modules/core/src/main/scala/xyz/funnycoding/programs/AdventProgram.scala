@@ -7,6 +7,7 @@ import xyz.funnycoding.file.FileReader
 import cats.effect.Sync
 import cats.implicits._
 import xyz.funnycoding.days._
+import cats.Eval
 
 object AdventProgram {
 
@@ -17,6 +18,10 @@ object AdventProgram {
 
   val lazyProgramLookup: Map[FilePath, List[String] => LazySolution] = Map(
     fileName("02") -> Day02.mkLazySol,
+    fileName("03") -> Day02.mkLazySol,
+    fileName("04") -> Day02.mkLazySol,
+    fileName("05") -> Day02.mkLazySol,
+    fileName("99") -> Day02.mkLazySol,
     fileName("06") -> Day6.mkLazySol
   )
 
@@ -31,6 +36,10 @@ object AdventProgram {
       implicit reader: FileReader[F]
   ): F[String] =
     for {
-      solution <- reader.withFile(path)(x => Sync[F].delay(f(x)))
+      solution <- reader
+                   .withFile(path)(x => Sync[F].delay(f(x)))
+                   .handleErrorWith(_ => {
+                     Sync[F].pure(LazySolution(Eval.later("file loading error"), Eval.later("file loading error")))
+                   })
     } yield s"solution to ${path.pretty} is :\n --- first  ${solution.first.value} \n--- second ${solution.second.value}"
 }
