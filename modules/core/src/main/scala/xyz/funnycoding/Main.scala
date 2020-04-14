@@ -16,18 +16,18 @@ object Main extends IOApp {
     for {
       a <- args.pure[IO]
       _ <- if (a.isEmpty) {
-            val x = programLookup.toList
-              .traverse {
-                case (key, value) => solve[IO](key, value).flatMap(putStrLn)
+            val x = lazyProgramLookup.toList
+              .parTraverse {
+                case (key, value) => solveLazy[IO](key, value).flatMap(putStrLn)
               }
 
             putStrLn("empty shit, gonna run all") *> x
           } else {
             val path = fileName(args.head)
-            programLookup.get(path) match {
+            lazyProgramLookup.get(path) match {
               case None => putStrLn("unexisting puzzle")
               case Some(f) => {
-                solve[IO](path, f).flatMap(putStrLn)
+                solveLazy[IO](path, f).flatMap(putStrLn)
               }
             }
           }

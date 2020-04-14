@@ -1,6 +1,7 @@
 package xyz.funnycoding.days
 
 import xyz.funnycoding.domain.solution._
+import cats.Eval
 
 object Day6 {
   type Planet         = String
@@ -57,12 +58,9 @@ object Day6 {
       .keys
       .head
 
-    val anc1 = ancestors(or1, 0, List.empty, universalOrbit)
-    println(anc1)
-    val anc2 = ancestors(or2, 0, List.empty, universalOrbit)
-    println(anc2)
+    val anc1   = ancestors(or1, 0, List.empty, universalOrbit)
+    val anc2   = ancestors(or2, 0, List.empty, universalOrbit)
     val common = anc1.map(_._1).intersect(anc2.map(_._1))
-    println(common)
     val compute = common.map { ancestor =>
       for {
         swap1 <- anc1.filter { case (a, _) => a == ancestor }.headOption
@@ -77,5 +75,12 @@ object Day6 {
     val first  = compute(parsed)
     val second = indirectLink("YOU", "SAN", parsed)
     Solution(first.toString(), second.toString())
+  }
+
+  def mkLazySol: List[String] => LazySolution = list => {
+    val parsed = Eval.later(parse(list))
+    val first  = parsed.map(compute)
+    val second = parsed.map(p => indirectLink("YOU", "SAN", p))
+    LazySolution(first.map(_.toString()), second.map(_.toString()))
   }
 }
