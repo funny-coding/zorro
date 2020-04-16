@@ -8,8 +8,9 @@ object Day05 {
   def mkLazySol: List[String] => LazySolution = list => {
     val machine = Eval.later {
       Parser.parse(list.mkString)
-    }
-    val first = machine.map(m => Runner.outputs(m).toString()).memoize
-    LazySolution(first, first)
+    }.memoize
+    val first  = machine.map(m => Runner.outputs(m)(1).toString())
+    val second = machine.map(m => Runner.outputs(m)(5).toString())
+    LazySolution(first, second)
   }
 }
