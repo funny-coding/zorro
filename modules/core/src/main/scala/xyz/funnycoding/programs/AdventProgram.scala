@@ -18,10 +18,7 @@ object AdventProgram {
 
   val lazyProgramLookup: Map[FilePath, List[String] => LazySolution] = Map(
     fileName("02") -> Day02.mkLazySol,
-    fileName("03") -> Day02.mkLazySol,
-    fileName("04") -> Day02.mkLazySol,
-    fileName("05") -> Day02.mkLazySol,
-    fileName("99") -> Day02.mkLazySol,
+    fileName("05") -> Day05.mkLazySol,
     fileName("06") -> Day6.mkLazySol
   )
 
